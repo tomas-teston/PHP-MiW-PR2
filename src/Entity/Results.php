@@ -51,15 +51,15 @@ class Results implements \JsonSerializable
      * @param int $id
      * @param int $result
      * @param DateTime $time
-     * @param Users $Users
+     * @param null $User
      * @throws \Exception
      */
-    public function __construct(int $id = 0, int $result = 0, DateTime $time = null, $Users = null)
+    public function __construct(int $id = 0, int $result = 0, DateTime $time = null, $User = null)
     {
         $this->id = $id;
         $this->result = $result;
         $this->time = $time ?? new DateTime("now");
-        $this->user = $Users ?? new Users();
+        $this->user = $User ?? new Users();
     }
 
     /**
@@ -153,4 +153,17 @@ class Results implements \JsonSerializable
             ]
         ];
     }
+
+    /**
+     * The __toString method allows a class to decide how it will react when it is converted to a string.
+     *
+     * @return string
+     * @link https://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.tostring
+     */
+    public function __toString()
+    {
+        return $this->getId() ?? '';
+    }
+
+
 }

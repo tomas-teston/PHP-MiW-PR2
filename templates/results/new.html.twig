@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Results{% endblock %}
+
+{% block body %}
+    <h1>Create new Results</h1>
+
+    {{ include('results/_form.html.twig') }}
+
+    <a href="{{ path('results_index') }}">back to list</a>
+{% endblock %}
