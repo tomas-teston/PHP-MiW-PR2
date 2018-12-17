@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Persona index{% endblock %}
+
+{% block body %}
+    <h1>Persona index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Dni</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for persona in personas %}
+            <tr>
+                <td>{{ persona.dni }}</td>
+                <td>{{ persona.nombre }}</td>
+                <td>{{ persona.email }}</td>
+                <td>
+                    <a href="{{ path('persona_show', {'dni': persona.dni}) }}">show</a>
+                    <a href="{{ path('persona_edit', {'dni': persona.dni}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('persona_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <p>Nombre: {{ persona.nombre }}</p>
+    <p>DNI: {{ persona.dni }}</p>
+    <p>e-mail: {{ persona.email }}</p>
+
+    <p><a href="{{ path('persona_index') }}">Listado</a></p>
+{% endblock %}

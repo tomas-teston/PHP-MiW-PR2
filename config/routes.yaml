@@ -1,0 +1,13 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+#
+#adios:
+#    path: /adios
+#    controller: App\Controller\DefaultController::despidete
+
+#index:
+#    path: /saluda/{nombre}
+#    _default:
+#        nombre: MiW
+#    controller: App\Controller\DefaultController::index

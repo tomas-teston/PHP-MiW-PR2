@@ -1,0 +1,16 @@
+{%  extends 'base.html.twig' %}
+
+{% block body %}
+
+    <ul>
+        {% for persona in personas %}
+            <li>{{ persona.nombre }}</li>
+        {% else %}
+            <li>No hay personas</li>
+        {% endfor %}
+
+    </ul>
+
+    <p><a href="{{ path('persona_nueva') }}">Nueva Persona</a></p>
+
+{%  endblock %}
