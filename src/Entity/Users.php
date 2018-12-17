@@ -212,9 +212,7 @@ class Users implements \JsonSerializable
      */
     public function __toString()
     {
-        return "[id = " . $this->getId() . ", username = " . $this->getUsername() .
-            ", email = " . $this->getEmail() . ", enabled = " . $this->isEnabled() .
-            ", admin = " . $this->getAdmin();
+        return $this->getId() ?? '';
     }
 
 

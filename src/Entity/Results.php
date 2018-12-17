@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,7 +37,7 @@ class Results implements \JsonSerializable
     private $time;
 
     /**
-     * @var \Users
+     * @var Users
      *
      * @ORM\ManyToOne(targetEntity="Users")
      * @ORM\JoinColumns({
@@ -50,14 +51,15 @@ class Results implements \JsonSerializable
      * @param int $id
      * @param int $result
      * @param DateTime $time
-     * @param Users $user
+     * @param Users $Users
+     * @throws \Exception
      */
-    public function __construct(int $id, int $result, DateTime $time, Users $user)
+    public function __construct(int $id = 0, int $result = 0, DateTime $time = null, $Users = null)
     {
         $this->id = $id;
         $this->result = $result;
-        $this->time = $time;
-        $this->user = $user;
+        $this->time = $time ?? new DateTime("now");
+        $this->user = $Users ?? new Users();
     }
 
     /**
@@ -151,18 +153,4 @@ class Results implements \JsonSerializable
             ]
         ];
     }
-
-    /**
-     * The __toString method allows a class to decide how it will react when it is converted to a string.
-     *
-     * @return string
-     * @link https://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.tostring
-     */
-    public function __toString()
-    {
-        return "id = " . $this->getId() . ", result = " . $this->getResult() .
-            ", idUser = " . $this->getUser()->getId();
-    }
-
-
 }
