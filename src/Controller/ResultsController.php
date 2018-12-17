@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Results;
+use App\Entity\Users;
 use App\Form\ResultsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,16 +23,16 @@ class ResultsController extends AbstractController
         $results = $this->getDoctrine()
             ->getRepository(Results::class)
             ->findAll();
-
         return $this->render('results/index.html.twig', ['results' => $results]);
     }
 
     /**
      * @Route("/new", name="results_new", methods={"GET","POST"})
+     * @throws \Exception
      */
     public function new(Request $request): Response
     {
-        $result = new Results();
+        $result = new Results(0, 0, null, new Users());
         $form = $this->createForm(ResultsType::class, $result);
         $form->handleRequest($request);
 
@@ -70,7 +71,6 @@ class ResultsController extends AbstractController
 
             return $this->redirectToRoute('results_index', ['id' => $result->getId()]);
         }
-
         return $this->render('results/edit.html.twig', [
             'result' => $result,
             'form' => $form->createView(),

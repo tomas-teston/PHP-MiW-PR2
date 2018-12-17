@@ -19,6 +19,10 @@
                 <th>Time</th>
                 <td>{{ result.time ? result.time|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
+            <tr>
+                <th>User</th>
+                <td>{{ result.user ? result.user.username : '' }}</td>
+            </tr>
         </tbody>
     </table>
 

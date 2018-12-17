@@ -11,6 +11,7 @@
                 <th>Id</th>
                 <th>Result</th>
                 <th>Time</th>
+                <th>User</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,6 +21,7 @@
                 <td>{{ result.id }}</td>
                 <td>{{ result.result }}</td>
                 <td>{{ result.time ? result.time|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ result.user ? result.user.username : '' }}</td>
                 <td>
                     <a href="{{ path('results_show', {'id': result.id}) }}">show</a>
                     <a href="{{ path('results_edit', {'id': result.id}) }}">edit</a>
