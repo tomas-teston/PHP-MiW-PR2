@@ -32,7 +32,11 @@ class ResultsController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $result = new Results(0, 0, null, new Users());
+        $entityManager = $this->getDoctrine()->getManager();
+        $myuser = new Users();
+        $entityManager->persist($myuser);
+        $result = new Results(0, 0, null, $myuser);
+        
         $form = $this->createForm(ResultsType::class, $result);
         $form->handleRequest($request);
 
