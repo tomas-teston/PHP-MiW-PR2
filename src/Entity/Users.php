@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="users", uniqueConstraints={@ORM\UniqueConstraint(name="IDX_UNIQ_EMAIL", columns={"email"}), @ORM\UniqueConstraint(name="IDX_UNIQ_USER", columns={"username"})})
  * @ORM\Entity
  */
-class Users implements JsonSerializable
+class Users implements \JsonSerializable
 {
     /**
      * @var int
@@ -65,7 +65,7 @@ class Users implements JsonSerializable
      * @param bool|null $admin
      * @param string $password
      */
-    public function __construct(int $id, string $username, string $email, bool $enabled, ?bool $admin, string $password)
+    public function __construct(int $id = 0, string $username = "", string $email = "", bool $enabled = false, ?bool $admin = false, string $password = "")
     {
         $this->id = $id;
         $this->username = $username;

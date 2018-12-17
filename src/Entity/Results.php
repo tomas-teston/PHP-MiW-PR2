@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="results", indexes={@ORM\Index(name="FK_USER_ID_idx", columns={"user_id"})})
  * @ORM\Entity
  */
-class Results implements JsonSerializable
+class Results implements \JsonSerializable
 {
     /**
      * @var int
