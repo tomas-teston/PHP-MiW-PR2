@@ -36,7 +36,7 @@ class ApiUsersController extends AbstractController
      * @Route(path="", name="getc", methods={ Request::METHOD_GET })
      * @return JsonResponse
      */
-    public function getcPersona(): JsonResponse
+    public function getcUser(): JsonResponse
     {
         /** @var Users[] $users */
         $users = $this->getDoctrine()
@@ -54,7 +54,7 @@ class ApiUsersController extends AbstractController
      * @param Users|null $user
      * @return JsonResponse
      */
-    public function getPersona(?Users $user): JsonResponse
+    public function getOneUser(?Users $user): JsonResponse
     {
         return (null === $user)
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
