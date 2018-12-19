@@ -58,16 +58,14 @@ class Users implements \JsonSerializable
 
     /**
      * Users constructor.
-     * @param int $id
      * @param string $username
      * @param string $email
      * @param bool $enabled
      * @param bool|null $admin
      * @param string $password
      */
-    public function __construct(int $id = 0, string $username = "", string $email = "", bool $enabled = false, ?bool $admin = false, string $password = "")
+    public function __construct(string $username = "", string $email = "", bool $enabled = false, ?bool $admin = false, string $password = "")
     {
-        $this->id = $id;
         $this->username = $username;
         $this->email = $email;
         $this->enabled = $enabled;
