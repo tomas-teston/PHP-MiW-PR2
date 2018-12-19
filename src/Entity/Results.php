@@ -54,9 +54,8 @@ class Results implements \JsonSerializable
      * @param null $User
      * @throws \Exception
      */
-    public function __construct(int $id = 0, int $result = 0, DateTime $time = null, $User = null)
+    public function __construct(int $result = 0, DateTime $time, $User = null)
     {
-        $this->id = $id;
         $this->result = $result;
         $this->time = $time ?? new DateTime("now");
         $this->user = $User ?? new Users();
