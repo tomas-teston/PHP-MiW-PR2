@@ -85,12 +85,12 @@ class ApiResultsController extends AbstractController
 
         // Error: falta userId
         if (null === $userId) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, $userId);
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, "Falta userId");
         }
 
         // Error: falta resultado
         if (null === $result) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, $result);
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, "Falta result");
         }
 
         // Error: username no existe

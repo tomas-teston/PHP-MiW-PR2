@@ -78,9 +78,14 @@ class ApiUsersController extends AbstractController
         $datos = json_decode($datosPeticion, true);
         $username = $datos['username'] ?? null;
         $email = $datos['email'] ?? null;
-        // Error: falta DNI
-        if (null === $username || null === $email) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, $email);
+        // Error: falta username
+        if (null === $username) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, "Falta username");
+        }
+
+        // Error: falta email
+        if (null === $email) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, "Falta email");
         }
 
         // Error: username ya existe
@@ -131,9 +136,15 @@ class ApiUsersController extends AbstractController
         $datos = json_decode($datosPeticion, true);
         $username = $datos['username'] ?? null;
         $email = $datos['email'] ?? null;
-        // Error: falta DNI
-        if (null === $username || null === $email) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, $email);
+
+        // Error: falta username
+        if (null === $username) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, "Falta username");
+        }
+
+        // Error: falta email
+        if (null === $email) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, "Falta email");
         }
 
         // Error: username ya existe
