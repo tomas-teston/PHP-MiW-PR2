@@ -51,7 +51,7 @@ class ApiUsersControllerTest extends WebTestCase
      * @return int
      * @throws \Exception
      */
-    public function testPostUsers201(): string
+    public function testPostUser201(): int
     {
         $username = "user_" . (string) random_int(0, 10E6);
         $email = $username . "@myemail.com";
@@ -79,17 +79,17 @@ class ApiUsersControllerTest extends WebTestCase
         self::assertArrayHasKey('username', $datosRecibidos['User']);
         self::assertEquals($username, $datosRecibidos['User']['username']);
 
-        return $username;
+        return $datosRecibidos['User']['id'];
     }
 
     /**
-     * @depends testPostUsers201
-     * @param string $username
+     * @depends testPostUser201
+     * @param int $id
      */
-    public function testPostUser422(string $username)
+    public function testPostUser422(int $id)
     {
         $datos = [
-            'username' => $username
+            'id' => $id
         ];
         self::$client->request(
             Request::METHOD_POST,
@@ -104,6 +104,59 @@ class ApiUsersControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertArrayHasKey('message', $datosRecibidos);
+        self::assertArrayHasKey('code', $datosRecibidos['message']);
+    }
+
+    /**
+     * Implements testGetUser200
+     * @depends testPostUser201
+     * @covers ::getUser
+     * @param int $id
+     */
+    public function testGetUser200(int $id)
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            ApiUsersController::API_USERS . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertArrayHasKey('User', $datosRecibidos);
+        self::assertArrayHasKey('id', $datosRecibidos['User']);
+        self::assertEquals($id, $datosRecibidos['User']['id']);
+    }
+
+    /**
+     * Implements testGetUser404
+     * @depends testPostUser201
+     * @param int $id
+     * @covers ::getUser
+     * @covers ::error
+     */
+    public function testGetUser404(int $id)
+    {
+        $id = $id + 100;
+        self::$client->request(
+            Request::METHOD_GET,
+            ApiUsersController::API_USERS . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertArrayHasKey('message', $datosRecibidos);
+        self::assertArrayHasKey('code', $datosRecibidos['message']);
     }
 
 }
