@@ -31,9 +31,10 @@ class ApiResultsControllerTest extends WebTestCase
 
     /**
      * Implements testGetcResults200
-     * @covers ::getcResults
+     * @covers ::getcResultsç
+     * @return void
      */
-    public function testGetcResults()
+    public function testGetcResults(): void
     {
         self::$client->request(
             Request::METHOD_GET,
@@ -47,23 +48,23 @@ class ApiResultsControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('results', $datosRecibidos);
+        self::assertArrayHasKey("results", $datosRecibidos);
     }
 
     /**
      * @return int
      * @throws \Exception
      */
-    public function testPostResult201(): int
+    public function testPostResult201(): array
     {
         $username = "user_" . (string) random_int(0, 10E6);
-        $email = $username . "@myemail.com";
+        $email = $username . "@test.com";
         $datos = [
-            'username' => $username,
-            'email' => $email,
-            'enabled' => false,
-            'admin' => false,
-            'password' => "1234"
+            "username" => $username,
+            "email" => $email,
+            "enabled" => false,
+            "admin" => false,
+            "password" => "1234"
         ];
         self::$client->request(
             Request::METHOD_POST,
@@ -82,9 +83,9 @@ class ApiResultsControllerTest extends WebTestCase
         $_result = (int) random_int(0, 100);
         $datetime = new DateTime("now");
         $result = [
-            'user_id' => $datosRecibidos['User']['id'],
-            'result' => $_result,
-            'time' => $datetime->format('d-m-Y H:i:s')
+            "user_id" => $datosRecibidos["user"]["id"],
+            "result" => $_result,
+            "time" => $datetime->format("d-m-Y H:i:s")
         ];
         self::$client->request(
             Request::METHOD_POST,
@@ -99,21 +100,23 @@ class ApiResultsControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('result', $datosRecibidos);
-        self::assertArrayHasKey('result', $datosRecibidos['result']);
-        self::assertEquals($_result, $datosRecibidos['result']['result']);
+        self::assertArrayHasKey("result", $datosRecibidos);
+        self::assertArrayHasKey("result", $datosRecibidos["result"]);
+        self::assertEquals($_result, $datosRecibidos["result"]["result"]);
 
-        return $datosRecibidos['result']['id'];
+        return $datosRecibidos;
     }
 
     /**
+     * @covers ::error
      * @depends testPostResult201
-     * @param int $id
+     * @param array $id
+     * @return void
      */
-    public function testPostResult422(int $id)
+    public function testPostResult422(array $createdResult): void
     {
         $datos = [
-            'id' => $id
+            "id" => $createdResult["result"]["id"]
         ];
         self::$client->request(
             Request::METHOD_POST,
@@ -128,21 +131,22 @@ class ApiResultsControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('message', $datosRecibidos);
-        self::assertArrayHasKey('code', $datosRecibidos['message']);
+        self::assertArrayHasKey("message", $datosRecibidos);
+        self::assertArrayHasKey("code", $datosRecibidos["message"]);
     }
 
     /**
      * Implements testGetResult200
      * @depends testPostResult201
      * @covers ::getOneResult
-     * @param int $id
+     * @param array $createdResult
+     * @return void
      */
-    public function testGetResult200(int $id)
+    public function testGetResult200(array $createdResult): void
     {
         self::$client->request(
             Request::METHOD_GET,
-            ApiResultsController::API_RESULTS . '/' . $id
+            ApiResultsController::API_RESULTS . "/" . $createdResult["result"]["id"]
         );
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -152,24 +156,24 @@ class ApiResultsControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('result', $datosRecibidos);
-        self::assertArrayHasKey('id', $datosRecibidos['result']);
-        self::assertEquals($id, $datosRecibidos['result']['id']);
+        self::assertArrayHasKey("result", $datosRecibidos);
+        self::assertArrayHasKey("id", $datosRecibidos["result"]);
     }
 
     /**
      * Implements testGetResult404
      * @depends testPostResult201
-     * @param int $id
+     * @param array $createdResult
      * @covers ::getOneResult
      * @covers ::error
+     * @return void
      */
-    public function testGetResult404(int $id)
+    public function testGetResult404(array $createdResult): void
     {
-        $id = $id + 100;
+        $id = ((int) $createdResult["result"]["id"]) + 100;
         self::$client->request(
             Request::METHOD_GET,
-            ApiResultsController::API_RESULTS . '/' . $id
+            ApiResultsController::API_RESULTS . "/" . $id
         );
         /** @var Response $response */
         $response = self::$client->getResponse();
@@ -179,8 +183,118 @@ class ApiResultsControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertArrayHasKey('message', $datosRecibidos);
-        self::assertArrayHasKey('code', $datosRecibidos['message']);
+        self::assertArrayHasKey("message", $datosRecibidos);
+        self::assertArrayHasKey("code", $datosRecibidos["message"]);
+    }
+
+    /**
+     * Implements testPutResult404
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @covers ::error
+     * @param array $createdResult
+     * @return void
+     * @throws
+     */
+    public function testPutResult404(array $createdResult): void
+    {
+        $id = random_int(0, 10E6);
+        $userId = ((int) $createdResult["result"]["id"]) + 100;
+        $result = random_int(0, 32);
+        $datos = [
+            "user" => $userId,
+            "result" => $result
+        ];
+
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultsController::API_RESULTS . "/" . $id,
+            [], [], [], json_encode($datos)
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
+     * Implements testPutResult422
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @covers ::error
+     * @param array $createdResult
+     * @return void
+     * @throws
+     */
+    public function testPutResult422(array $createdResult): void
+    {
+        $id = ((int) $createdResult["result"]["id"]);
+        $result = random_int(0, 32);
+        $datos = [
+            "result" => $result
+        ];
+
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultsController::API_RESULTS . "/" . $id,
+            [], [], [], json_encode($datos)
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        self::assertEquals(
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(422, $datosRecibidos["message"]["code"]);
+        self::assertEquals("Falta userId", $datosRecibidos["message"]["message"]);
+    }
+    /**
+     * Implements testPutResult200
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @param array $createdResult
+     * @return void
+     * @throws
+     */
+    public function testPutResult200(array $createdResult): void
+    {
+        $id = ((int) $createdResult["result"]["id"]);
+        $userId = ((int) $createdResult["result"]["user"]["user"]["id"]);
+        $result = random_int(0, 32);
+        $newTimestamp = new \DateTime("now");
+        $datos = [
+            "user_id" => $userId,
+            "result" => $result,
+            "time" => $newTimestamp
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultsController::API_RESULTS . "/" . $id,
+            [], [], [], json_encode($datos)
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals($result, $datosRecibidos["result"]["result"]);
+        self::assertEquals($userId, $datosRecibidos["result"]["user"]["user"]["id"]);
     }
 
 }

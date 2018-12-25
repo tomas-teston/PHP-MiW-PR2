@@ -96,7 +96,7 @@ class ApiResultsController extends AbstractController
         // Error: username no existe
         $user = $em->getRepository(Users::class)->find($userId);
         if ($user === null) {
-            return $this->error(Response::HTTP_BAD_REQUEST, 'No existe usuario con id: ' . $userId);
+            return $this->error(Response::HTTP_NOT_FOUND, 'No existe usuario con id: ' . $userId);
         }
 
         // Crear resultado
@@ -111,11 +111,61 @@ class ApiResultsController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @param Results $result
+     * @Route(path="/{id}", name="put", methods={ Request::METHOD_PUT })
+     * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function putResult(?Results $result, Request $request): JsonResponse
+    {
+        if (null === $result) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
+        }
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $datosPeticion = $request->getContent();
+        $datos = json_decode($datosPeticion, true);
+        $userId = $datos['user_id'] ?? null;
+        $newResult = $datos['result'] ?? null;
+        $newTimestamp = new \DateTime('now');
+
+        // Error: falta userId
+        if (null === $userId) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta userId');
+        }
+
+        // Error: falta result
+        if (null === $newResult) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta result');
+        }
+
+        //Error: USER no existe
+        $userDB = $this->getDoctrine()
+            ->getRepository(Users::class)
+            ->find($userId);
+        if (null === $userDB) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'USER NOT FOUND');
+        }
+        // Modificar Result
+        $result->setResult($newResult);
+        $result->setTime($newTimestamp);
+        $result->setUser($userDB);
+        // Hacerla persistente
+
+        $em->persist($result);
+        $em->flush();
+
+        // devolver respuesta
+        return new JsonResponse($result, Response::HTTP_OK);
+    }
+
+    /**
      * @Route(path="/{id}", name="remove", methods={ Request::METHOD_DELETE })
      * @param Results|null $result
      * @return JsonResponse
      */
-    public function removeUser(?Results $result): JsonResponse
+    public function removeResult(?Results $result): JsonResponse
     {
         if (null === $result) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
@@ -126,7 +176,7 @@ class ApiResultsController extends AbstractController
         $em->flush();
 
         // devolver respuesta
-        return new JsonResponse(["id" => $id, "op" => "removed"], Response::HTTP_OK);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

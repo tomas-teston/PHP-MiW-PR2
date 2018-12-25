@@ -192,12 +192,13 @@ class Users implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'User' => [
+            'user' => [
                 'id' => $this->getId(),
                 'username' => $this->getUsername(),
                 'email' => $this->getEmail(),
                 'enabled' => $this->isEnabled(),
-                'admin' => $this->getAdmin()
+                'admin' => $this->getAdmin(),
+                'password' => $this->getPassword()
             ]
         ];
     }

@@ -196,7 +196,7 @@ class ApiUsersController extends AbstractController
         $em->flush();
 
         // devolver respuesta
-        return new JsonResponse(["id" => $id, "username" => $username, "op" => "removed"], Response::HTTP_OK);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
