@@ -30,7 +30,7 @@
             }
           },
           "404": {
-            "$ref": "#/components/responses/404_Not_Found_Response"
+            "$ref": "#/components/responses/404_Resource_Not_Found_Response"
           }
         }
       },
@@ -83,6 +83,19 @@
           },
           "description": "`User` properties to add to the system",
           "required": true
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete all user",
+        "description": "Delete all users.",
+        "operationId": "api_user_removeAllUsers",
+        "responses": {
+          "204": {
+            "description": "Users deleted"
+          }
         }
       },
       "options": {
@@ -301,6 +314,19 @@
           },
           "description": "`Result` properties to add to the system",
           "required": true
+        }
+      },
+      "delete": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Delete all results",
+        "description": "Delete all results.",
+        "operationId": "api_user_removeAllResults",
+        "responses": {
+          "204": {
+            "description": "Results deleted"
+          }
         }
       },
       "options": {
