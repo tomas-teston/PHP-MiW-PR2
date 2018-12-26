@@ -433,4 +433,51 @@ class ApiUsersControllerTest extends WebTestCase
         self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
     }
 
+    /**
+     * Implements testOptions
+     * @covers ::options
+     * @return void
+     * @throws \Exception
+     */
+    public function testOptions(): void
+    {
+        self::$client->request(
+            Request::METHOD_OPTIONS,
+            apiUsersController::API_USERS
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertEquals("GET, POST, OPTIONS", $response->headers->get("Allow"));
+    }
+
+    /**
+     * Implements testOptions2
+     * @covers ::options2
+     * @return void
+     * @throws \Exception
+     */
+    public function testOptions2(): void
+    {
+        $id = random_int(0, 10E6);
+        self::$client->request(
+            Request::METHOD_OPTIONS,
+            apiUsersController::API_USERS . "/" . $id
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertEquals("GET, POST, PUT, DELETE, OPTIONS", $response->headers->get("Allow"));
+    }
+
 }

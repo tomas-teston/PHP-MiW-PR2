@@ -180,6 +180,26 @@ class ApiResultsController extends AbstractController
     }
 
     /**
+     * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
+     * @return JsonResponse
+     */
+    public function optionsResult(): JsonResponse
+    {
+        // devolver respuesta
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, OPTIONS"));
+    }
+
+    /**
+     * @Route(path="/{id}", name="options2", methods={ Request::METHOD_OPTIONS })
+     * @return JsonResponse
+     */
+    public function optionsResult2(): JsonResponse
+    {
+        // devolver respuesta
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, PUT, DELETE, OPTIONS"));
+    }
+
+    /**
      * @param int $statusCode
      * @param string $message
      *

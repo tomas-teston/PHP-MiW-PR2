@@ -33,7 +33,7 @@ class ApiUsersController extends AbstractController
     public const API_USERS = '/api/v1/users';
 
     /**
-     * @Route(path="", name="getc", methods={ Request::METHOD_GET })
+     * @Route(path="", name="getc", methods={ Request::METHOD_GET})
      * @return JsonResponse
      */
     public function getcUser(): JsonResponse
@@ -180,23 +180,41 @@ class ApiUsersController extends AbstractController
     }
 
     /**
-     * @Route(path="/{id}", name="remove", methods={ Request::METHOD_DELETE })
-     * @param Users|null $user
-     * @return JsonResponse
-     */
+ * @Route(path="/{id}", name="remove", methods={ Request::METHOD_DELETE })
+ * @param Users|null $user
+ * @return JsonResponse
+ */
     public function removeUser(?Users $user): JsonResponse
     {
         if (null === $user) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
         }
         $em = $this->getDoctrine()->getManager();
-        $id = $user->getId();
-        $username = $user->getUsername();
         $em->remove($user);
         $em->flush();
 
         // devolver respuesta
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
+     * @return JsonResponse
+     */
+    public function optionsUser(): JsonResponse
+    {
+        // devolver respuesta
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, OPTIONS"));
+    }
+
+    /**
+     * @Route(path="/{id}", name="options2", methods={ Request::METHOD_OPTIONS })
+     * @return JsonResponse
+     */
+    public function optionsUser2(): JsonResponse
+    {
+        // devolver respuesta
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, PUT, DELETE, OPTIONS"));
     }
 
     /**
