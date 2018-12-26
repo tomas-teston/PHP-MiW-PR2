@@ -23,18 +23,20 @@ class ApiResultsControllerTest extends WebTestCase
 
     /** @var Client $client */
     private static $client;
+    private static $user;
 
     public static function setUpBeforeClass()
     {
         self::$client = static::createClient();
+        self::$user = self::createUser();
     }
 
     /**
-     * Implements testGetcResults200
-     * @covers ::getcResultsç
+     * Implements testGetcResults404
+     * @covers ::getcResults
      * @return void
      */
-    public function testGetcResults(): void
+    public function testGetcResults404(): void
     {
         self::$client->request(
             Request::METHOD_GET,
@@ -43,12 +45,13 @@ class ApiResultsControllerTest extends WebTestCase
         /** @var Response $response */
         $response = self::$client->getResponse();
         self::assertEquals(
-            Response::HTTP_OK,
+            Response::HTTP_NOT_FOUND,
             $response->getStatusCode()
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertArrayHasKey("results", $datosRecibidos);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
     }
 
     /**
@@ -57,33 +60,12 @@ class ApiResultsControllerTest extends WebTestCase
      */
     public function testPostResult201(): array
     {
-        $username = "user_" . (string) random_int(0, 10E6);
-        $email = $username . "@test.com";
-        $datos = [
-            "username" => $username,
-            "email" => $email,
-            "enabled" => false,
-            "admin" => false,
-            "password" => "1234"
-        ];
-        self::$client->request(
-            Request::METHOD_POST,
-            ApiUsersController::API_USERS,
-            [], [], [], json_encode($datos)
-        );
-
-        $response = self::$client->getResponse();
-        self::assertEquals(
-            Response::HTTP_CREATED,
-            $response->getStatusCode()
-        );
-        self::assertJson($response->getContent());
-        $datosRecibidos = json_decode($response->getContent(), true);
+        $userId = self::$user['user']['id'];
 
         $_result = (int) random_int(0, 100);
         $datetime = new DateTime("now");
         $result = [
-            "user_id" => $datosRecibidos["user"]["id"],
+            "user_id" => $userId,
             "result" => $_result,
             "time" => $datetime->format("d-m-Y H:i:s")
         ];
@@ -108,15 +90,38 @@ class ApiResultsControllerTest extends WebTestCase
     }
 
     /**
-     * @covers ::error
-     * @depends testPostResult201
-     * @param array $id
+     * Implements testGetcResults200
+     * @covers ::getcResults
      * @return void
      */
-    public function testPostResult422(array $createdResult): void
+    public function testGetcResults(): void
     {
+        self::$client->request(
+            Request::METHOD_GET,
+            ApiResultsController::API_RESULTS
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertArrayHasKey("results", $datosRecibidos);
+    }
+
+    /**
+     * @covers ::error
+     * @depends testPostResult201
+     * @return void
+     * @throws \Exception
+     */
+    public function testPostResult422(): void
+    {
+        $id = random_int(0, 32);
         $datos = [
-            "id" => $createdResult["result"]["id"]
+            "id" => $id
         ];
         self::$client->request(
             Request::METHOD_POST,
@@ -163,14 +168,14 @@ class ApiResultsControllerTest extends WebTestCase
     /**
      * Implements testGetResult404
      * @depends testPostResult201
-     * @param array $createdResult
+     * @return void
+     * @throws \Exception
      * @covers ::getOneResult
      * @covers ::error
-     * @return void
      */
-    public function testGetResult404(array $createdResult): void
+    public function testGetResult404(): void
     {
-        $id = ((int) $createdResult["result"]["id"]) + 100;
+        $id = random_int(0, 10E6);
         self::$client->request(
             Request::METHOD_GET,
             ApiResultsController::API_RESULTS . "/" . $id
@@ -199,7 +204,7 @@ class ApiResultsControllerTest extends WebTestCase
     public function testPutResult404(array $createdResult): void
     {
         $id = random_int(0, 10E6);
-        $userId = ((int) $createdResult["result"]["id"]) + 100;
+        $userId = self::$user['user']['id'];
         $result = random_int(0, 32);
         $datos = [
             "user" => $userId,
@@ -298,6 +303,27 @@ class ApiResultsControllerTest extends WebTestCase
     }
 
     /**
+     * Implements testRemoveAllResults200
+     * @covers ::removeAllResults
+     * @return void
+     */
+    public function testRemoveAllResults200(): void
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiResultsController::API_RESULTS
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $response->getStatusCode()
+        );
+        self::assertEquals("", $response->getContent());
+    }
+
+    /**
      * Implements testOptions
      * @covers ::options
      * @return void
@@ -342,6 +368,56 @@ class ApiResultsControllerTest extends WebTestCase
             $response->getStatusCode()
         );
         self::assertEquals("GET, POST, PUT, DELETE, OPTIONS", $response->headers->get("Allow"));
+    }
+
+    /*
+    * Ejecución al final del test
+    */
+    public static function tearDownAfterClass()
+    {
+        self::removeUser(self::$user['user']['id']);
+    }
+
+    /**
+     * Create User
+     * @return array $user
+     * @throws
+     */
+    public static function createUser(): array
+    {
+        $username = "user_" . (string) random_int(0, 10E6);
+        $email = $username . "@test.com";
+        $password = "pass" . $username . "word";
+        $datos = [
+            'username' => $username,
+            'email' => $email,
+            'enabled' => true,
+            'admin' => false,
+            'password' => $password,
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            apiUsersController::API_USERS,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        $user = json_decode($response->getContent(), true);
+        return $user;
+    }
+
+    /**
+     * Remove User
+     * @param int $id
+     */
+    public static function removeUser(int $id): void
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiUsersController::API_USERS . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
     }
 
 }

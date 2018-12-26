@@ -44,7 +44,7 @@ class ApiResultsController extends AbstractController
         $results = $this->getDoctrine()
             ->getRepository(Results::class)
             ->findAll();
-        return (null === $results)
+        return (empty($results))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse(
                 [ 'results' => $results ]
@@ -176,6 +176,27 @@ class ApiResultsController extends AbstractController
         $em->flush();
 
         // devolver respuesta
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route(path="", name="removeAll", methods={ Request::METHOD_DELETE })
+     * @return JsonResponse
+     */
+    public function removeAllResults(): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var Results[] $results */
+        $results = $this->getDoctrine()
+            ->getRepository(Results::class)
+            ->findAll();
+
+        foreach ($results as $result) {
+            $em->remove($result);
+            $em->flush();
+        }
+
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 

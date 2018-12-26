@@ -26,31 +26,6 @@ class ApiUsersControllerTest extends WebTestCase
     }
 
     /**
-     * Implements testGetcUser404
-     * @covers ::getcUser
-     * @covers ::error
-     * @return void
-     */
-    public function testGetcUser404(): void
-    {
-        self::$client->request(
-            Request::METHOD_GET,
-            ApiUsersController::API_USERS
-        );
-
-        /** @var Response $response */
-        $response = self::$client->getResponse();
-        self::assertEquals(
-            Response::HTTP_NOT_FOUND,
-            $response->getStatusCode()
-        );
-        self::assertJson($response->getContent());
-        $datosRecibidos = json_decode($response->getContent(), true);
-        self::assertEquals(404, $datosRecibidos["message"]["code"]);
-        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
-    }
-
-    /**
      * @covers ::error
      * @return int
      * @throws \Exception
@@ -423,6 +398,53 @@ class ApiUsersControllerTest extends WebTestCase
         /** @var Response $response */
         $response = self::$client->getResponse();
 
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
+     * Implements testRemoveAllUsers200
+     * @covers ::removeAllUsers
+     * @return void
+     */
+    public function testRemoveAllUsers200(): void
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiUsersController::API_USERS
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $response->getStatusCode()
+        );
+        self::assertEquals("", $response->getContent());
+    }
+
+    /**
+     * Implements testGetcUser404
+     * @depends testRemoveAllUsers200
+     * @covers ::getcUser
+     * @covers ::error
+     * @return void
+     */
+    public function testGetcUser404(): void
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            ApiUsersController::API_USERS
+        );
+
+        /** @var Response $response */
+        $response = self::$client->getResponse();
         self::assertEquals(
             Response::HTTP_NOT_FOUND,
             $response->getStatusCode()

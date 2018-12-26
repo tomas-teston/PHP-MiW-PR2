@@ -42,7 +42,7 @@ class ApiUsersController extends AbstractController
         $users = $this->getDoctrine()
             ->getRepository(Users::class)
             ->findAll();
-        return (null === $users)
+        return (empty($users))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse(
                 [ 'users' => $users ]
@@ -198,6 +198,28 @@ class ApiUsersController extends AbstractController
     }
 
     /**
+     * @Route(path="", name="removeAll", methods={ Request::METHOD_DELETE })
+     * @return JsonResponse
+     */
+    public function removeAllUsers(): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var Users[] $users */
+        $users = $this->getDoctrine()
+            ->getRepository(Users::class)
+            ->findAll();
+
+        foreach ($users as $user) {
+            $em->remove($user);
+            $em->flush();
+        }
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+
+    /**
      * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
      * @return JsonResponse
      */
@@ -216,6 +238,8 @@ class ApiUsersController extends AbstractController
         // devolver respuesta
         return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, PUT, DELETE, OPTIONS"));
     }
+
+
 
     /**
      * @param int $statusCode
