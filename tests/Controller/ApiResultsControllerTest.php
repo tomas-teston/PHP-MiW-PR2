@@ -265,6 +265,7 @@ class ApiResultsControllerTest extends WebTestCase
         self::assertEquals(422, $datosRecibidos["message"]["code"]);
         self::assertEquals("Falta userId", $datosRecibidos["message"]["message"]);
     }
+
     /**
      * Implements testPutResult200
      * @depends testPostResult201

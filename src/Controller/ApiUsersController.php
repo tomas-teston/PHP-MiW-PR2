@@ -12,6 +12,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Results;
 use App\Entity\Users;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -217,7 +218,6 @@ class ApiUsersController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
-
 
     /**
      * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
