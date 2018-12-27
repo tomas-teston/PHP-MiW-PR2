@@ -248,6 +248,57 @@
         }
       }
     },
+    "/users/{userId}/results": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Return a results by user ID",
+        "description": "Return the results by `userId`.",
+        "operationId": "api_user_getResults_by_user_id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/userId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsArray"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404_Resource_Not_Found_Response"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete results by User ID",
+        "description": "Delete results by identified `userId`.",
+        "operationId": "api_user_removeResults_by_user_id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/userId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_Resource_Not_Found_Response"
+          }
+        }
+      }
+    },
     "/results": {
       "get": {
         "tags": [
